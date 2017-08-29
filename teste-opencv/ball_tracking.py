@@ -5,11 +5,11 @@ import cv2
 
 buffer_size = 64
 
-colorLower = (170, 150, 6)
-colorUpper = (180 + 5, 255, 255)
+#colorLower = (170, 150, 6)
+#colorUpper = (180 + 5, 255, 255)
 
-#colorLower = (70, 150, 6)
-#colorUpper = (135, 255, 255)
+colorLower = (70, 150, 6)
+colorUpper = (135, 255, 255)
 
 pts = deque(maxlen=buffer_size)
 
@@ -52,9 +52,9 @@ while True:
 			cv2.circle(frame, center, 5, (0, 0, 255), -1)
  
 	# update the points queue
-	#pts.appendleft(center)
+	pts.appendleft(center)
 
-	'''
+
 		# loop over the set of tracked points
 	for i in xrange(1, len(pts)):
 		# if either of the tracked points are None, ignore
@@ -66,7 +66,7 @@ while True:
 		# draw the connecting lines
 		thickness = int(np.sqrt(buffer_size / float(i + 1)) * 2.5)
 		cv2.line(frame, pts[i - 1], pts[i], (0, 0, 255), thickness)
- 	'''
+ 
 
 	# show the frame to our screen
 	frame = cv2.flip(frame, 1)

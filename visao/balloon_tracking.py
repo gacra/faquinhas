@@ -3,13 +3,13 @@ import imutils
 import cv2
 
 colorsLimits = {'red': [(170, 150, 6), (180 + 5, 255, 255)],
-                'blue': [(70, 150, 6), (135, 255, 255)]}
-
-#colorsLimits = {'red': [(108, 40, 2), (203, 122, 38)]}
+                'blue': [(96, 140, 108), (120, 255, 255)],
+                'green': [(30, 150, 6), (68, 255, 255)]}
 
 colorsPosition = {}
 
 camera = cv2.VideoCapture(0)
+#camera = cv2.VideoCapture(1)
 
 frameWidth = 600
 cv2.namedWindow("Frame")
@@ -48,7 +48,8 @@ try:
 
                 if radius > 10:
                     cv2.circle(frame, center, 5, (0, 0, 255), -1)
-
+                    cv2.circle(frame, (int(x), int(y)), int(radius),
+                               (0, 255, 255), 2)
                     x = (center[0]-(frameWidth/2.0))/float((frameWidth/2.0))
                     y = (center[1] - (frameHeight/ 2.0)) / float((frameHeight/2.0))
 
@@ -65,7 +66,7 @@ try:
 
         print(colorsPosition)
 
-except:
+except KeyboardInterrupt:
     # cleanup the camera and close any open windows
     camera.release()
     cv2.destroyAllWindows()

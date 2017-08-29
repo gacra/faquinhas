@@ -1,15 +1,19 @@
 import numpy as np
 import imutils
 import cv2
+from collections import deque
+
 
 
 def mouse_click(event, x, y, flags, param):
     global firstClick
+    global colorsLimits
+    global undo
 
     if event == cv2.EVENT_LBUTTONDOWN:
-        color = frame[y, x]
+        color = hsv[y, x]
 
-        print(color)
+        undo.append(list(colorsLimits))
         if firstClick == True:
             colorMin = (int(color[0]), int(color[1]), int(color[2]))
             colorsLimits[0] = colorMin
@@ -30,8 +34,15 @@ def mouse_click(event, x, y, flags, param):
             if color[2] > colorsLimits[1][2]:
                 colorsLimits[1] = (colorsLimits[1][0], colorsLimits[1][1], int(color[2]))
         print(colorsLimits)
+    if event == cv2.EVENT_RBUTTONDOWN:
+        if len(undo) > 0:
+            colorsLimits = undo.pop()
+            print("new: " + str(colorsLimits))
 
-colorsLimits = [(0,0,0), (255, 255, 255)]
+
+colorsLimits = [(0,0,0), (180, 255, 255)]
+undo = deque()
+
 
 camera = cv2.VideoCapture(0)
 
@@ -42,8 +53,7 @@ cv2.setMouseCallback("image", mouse_click)
 
 firstClick = True
 
-#try:
-while True:
+try:
 
     while True:
 
@@ -51,20 +61,25 @@ while True:
 
         frame = imutils.resize(frame_cam, width=frameWidth)  # 600px -> menos px, mais rapido de processar
 
+        hsv = cv2.cvtColor(frame, cv2.COLOR_BGR2HSV)
+
         # Criacao e tratamendo da mascara
-        mask = cv2.inRange(frame, colorsLimits[0], colorsLimits[1])
+        mask = cv2.inRange(hsv, colorsLimits[0], colorsLimits[1])
         mask = cv2.erode(mask, None, iterations=2)
         mask = cv2.dilate(mask, None, iterations=2)
 
+        if firstClick == False:
+            hsv[np.where(mask==[255])] = (120, 255, 255)
+
         output = cv2.bitwise_and(frame, frame, mask=mask)
 
-        cv2.imshow('image', frame)
+        cv2.imshow('image', cv2.cvtColor(hsv, cv2.COLOR_HSV2BGR))
 
         cv2.imshow('mask', output)
 
         key = cv2.waitKey(1) & 0xFF
 
-#except:
+except KeyboardInterrupt:
     # cleanup the camera and close any open windows
     camera.release()
     cv2.destroyAllWindows()
