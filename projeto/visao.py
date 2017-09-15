@@ -1,52 +1,47 @@
+from threading import Thread
 import imutils
 import cv2
-import sys
 
-erro = False
-if len(sys.argv) >= 2:
-    if sys.argv[1] == 'true':
-        debub = True
-    elif sys.argv[1] == 'false':
-        debub = False
-    else:
-        erro = True
+class Visao(Thread):
+    '''Responsavel pelo tratamento da imagem vinda da camera'''
 
-    if len(sys.argv) == 3:
-        try:
-            frameWidth = int(sys.argv[2])
-        except:
-            erro = True
-if len(sys.argv) == 1 or erro == True:
-    debub = False
-    frameWidth = 600
+    def __init__(self, arquivo, numCam, largPixels, debug, mundo):
+        # type: (object, int, int, bool, Mundo) -> None
+        """
+Inicializa o objeto Visao
+        :param arquivo: Arquivo com os limites das cores
+        :param numCam: Numero da camera usada
+        :param largPixels: Largura da imgem em pixels
+        :param debug: Caso True mostra a imagem para debug
+        :param mundo: Objeto mundo
+        """
+        self.colorsLimits = {'blue': [(101, 125, 81), (120, 255, 255)],
+                             'green': [(32, 57, 106), (68, 216, 215)],
+                             'red': [[(0, 106, 177), (3, 192, 245)], [(173, 108, 143), (179, 208, 246)]]}
+        self.camera = cv2.VideoCapture(numCam)
+        self.largPixels = largPixels
+        self.debug = debug
 
-print(frameWidth)
+        self.mundo = mundo
 
-colorsLimits = {'blue': [(101, 125, 81), (120, 255, 255)],
-                'green': [(32, 57, 106), (68, 216, 215)],
-                'red': [[(0, 106, 177), (3, 192, 245)], [(173, 108, 143), (179, 208, 246)]]}
+        self.mundo.montaListaBexiga(self.colorsLimits.keys())
 
-colorsPosition = {}
+        Thread.__init__(self)
 
-camera = cv2.VideoCapture(0)
-#camera = cv2.VideoCapture(1)
+    def update(self):
+        """
+Atualiza as informacoes do Mundo a partir da imagem da camera
+        """
+        (grabbed, frame) = self.camera.read()
 
-cv2.namedWindow("Frame")
-
-try:
-
-    while True:
-
-        (grabbed, frame) = camera.read()
-
-        frame = imutils.resize(frame, width=frameWidth)  # 600px -> menos px, mais rapido de processar
+        frame = imutils.resize(frame, width=self.largPixels)  # 600px -> menos px, mais rapido de processar
 
         frameHeight = len(frame)
 
         hsv = cv2.cvtColor(frame, cv2.COLOR_BGR2HSV)
         #hsv = frame
 
-        for color, colorLim in colorsLimits.iteritems():
+        for color, colorLim in self.colorsLimits.iteritems():
             # Criacao e tratamendo da mascara
             if color == 'red':
                 mask1 = cv2.inRange(hsv, colorLim[0][0], colorLim[0][1])
@@ -80,27 +75,35 @@ try:
                 if h > 10:
                     #cv2.circle(frame, center, 5, (0, 0, 255), -1)
                     #cv2.circle(frame, (int(x), int(y)), int(radius), (0, 255, 255), 2)
-                    x = (center[0]-(frameWidth/2.0))/float((frameWidth/2.0))
+                    x = (center[0]-(self.largPixels/2.0))/float((self.largPixels/2.0))
                     y = (center[1] - (frameHeight/ 2.0)) / float((frameHeight/2.0))
+                    h = h/float(frameHeight)
 
-                    colorsPosition[color] = (x, y, h, area)
+                    self.mundo.setBexiga(color, x, y, h, area)
                     detect = True
-                if debub:
+                if self.debug:
                     cv2.drawContours(frame, c, -1, (255, 0, 0), 3)
 
             if detect == False:
-                if color in colorsPosition:
-                    del colorsPosition[color]
+                self.mundo.bexigaInvisivel(color)
 
-        if debub:
+        self.mundo.atualizado = True
+
+        if self.debug:
             frame = cv2.flip(frame, 1)
             cv2.imshow("Frame", frame)
             key = cv2.waitKey(1) & 0xFF
 
-        if len(colorsPosition) != 0:
-            print(colorsPosition)
+    def run(self):
+        """
+Metodo a rodar na Thread
+        """
+        while True:
+            self.update()
 
-except KeyboardInterrupt:
-    # cleanup the camera and close any open windows
-    camera.release()
-    cv2.destroyAllWindows()
+    def finaliza(self):
+        """
+Libera a camera e destroi as janelas. Chamar ao final do programa.
+        """
+        self.camera.release()
+        cv2.destroyAllWindows()
