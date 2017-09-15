@@ -17,7 +17,7 @@ Inicializa o objeto Visao
         """
         self.colorsLimits = {'blue': [(101, 125, 81), (120, 255, 255)],
                              'green': [(32, 57, 106), (68, 216, 215)],
-                             'red': [[(0, 106, 177), (3, 192, 245)], [(173, 108, 143), (179, 208, 246)]]}
+                             'red': [[(0, 111, 113), (7, 244, 189)], [(179, 229, 156), (179, 229, 156)]]}
         self.camera = cv2.VideoCapture(numCam)
         self.largPixels = largPixels
         self.debug = debug

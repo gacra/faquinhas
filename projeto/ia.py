@@ -20,6 +20,8 @@ class IA(Thread):
                 velAng = int(x*100)
                 velLim = int((1-bexiga.altura)*100)
                 self.movimentacao.mover(velAng, velLim)
+            else:
+                self.movimentacao.mover(0, 0)
             self.mundo.atualizado = False
 
     def run(self):
@@ -29,3 +31,6 @@ Metodo a rodar na Thread
         """
         while True:
             self.decisao()
+
+    def finalizar(self):
+        self.movimentacao.finalizar()

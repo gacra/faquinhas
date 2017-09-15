@@ -27,8 +27,17 @@ sonar = Sonar(2.0, mundo)
 
 ia = IA(mundo)
 
+'''
+while True:
+    visao.update()
+    sonar.update()
+    # print(mundo)  # For Debug
+    ia.decisao()
+'''
+
 #visao.start()
 #ia.start()
+
 try:
     while True:
         visao.update()
@@ -37,3 +46,4 @@ try:
         ia.decisao()
 except:
     visao.finaliza()
+    ia.finalizar()

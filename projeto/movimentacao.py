@@ -17,12 +17,12 @@ Mover o robo com as velocidades passadas
         debug += "Vel linear = " + str(velLin)
         print(debug)
 
-        if velAng > 0:
+        if velLin > 0:
             sentido0 = 1
         else:
             sentido0 = -1
         sentido1 = -sentido0
-        dutycicle = abs(velAng)
+        dutycicle = abs(velLin)
 
         self.pwm.setPWM(0, sentido0, dutycicle)
         self.pwm.setPWM(1, sentido1, dutycicle)
