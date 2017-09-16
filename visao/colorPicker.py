@@ -3,6 +3,7 @@ import imutils
 import cv2
 import sys
 from collections import deque
+import pickle
 
 def mouse_click_red(event, x, y, flags, param):
     global firstClick
@@ -220,13 +221,14 @@ if __name__ == '__main__':
                     range = hsvColorPicker(cor, colorLimitsIni, undoIni)
                 result[cor] = range
                 dicUndo[cor] = undo.__copy__()
-                print(dicUndo)
         else:
             print("Uso python colorPicker.py [rgb|hsv]")
 
     except KeyboardInterrupt:
         print()
         print(result)
+        with open('../calibr.wr', 'wb') as output:
+            pickle.dump(result, output, pickle.HIGHEST_PROTOCOL)
         # cleanup the camera and close any open windows
         camera.release()
         cv2.destroyAllWindows()

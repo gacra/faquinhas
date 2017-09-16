@@ -22,7 +22,7 @@ if len(sys.argv) < 3 or erro == True:
     debub = False
     largPixels = 600
 
-visao = Visao(None, 0, largPixels, debub, mundo)
+visao = Visao("calibr.wr", 0, largPixels, debub, mundo)
 sonar = Sonar(2.0, mundo)
 
 ia = IA(mundo)

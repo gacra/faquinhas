@@ -1,6 +1,7 @@
 from threading import Thread
 import imutils
 import cv2
+import pickle
 
 class Visao(Thread):
     '''Responsavel pelo tratamento da imagem vinda da camera'''
@@ -15,9 +16,16 @@ Inicializa o objeto Visao
         :param debug: Caso True mostra a imagem para debug
         :param mundo: Objeto mundo
         """
+
+        '''
         self.colorsLimits = {'blue': [(101, 125, 81), (120, 255, 255)],
                              'green': [(32, 57, 106), (68, 216, 215)],
                              'red': [[(0, 111, 113), (7, 244, 189)], [(179, 229, 156), (179, 229, 156)]]}
+        '''
+
+        with open('../calibr.wr', 'rb') as input:
+            self.colorsLimits = pickle.load(input)
+
         self.camera = cv2.VideoCapture(numCam)
         self.largPixels = largPixels
         self.debug = debug
