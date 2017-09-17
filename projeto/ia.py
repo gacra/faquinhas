@@ -14,7 +14,7 @@ class IA(Thread):
     def decisao(self):
         if self.mundo.atualizado == True:
             self.listaBexiga = self.mundo.listaBexiga
-            bexiga = self.listaBexiga.get('red')
+            bexiga = self.listaBexiga.get('orange')
             if bexiga.visivel == True:
                 (x, y) = bexiga.getPos()
                 velAng = int(x*100)
