@@ -227,8 +227,15 @@ if __name__ == '__main__':
     except KeyboardInterrupt:
         print()
         print(result)
+
+        with open('../calibr.wr', 'rb') as input:
+            anterior = pickle.load(input)
+
+        for cor, limite in result.items():
+            anterior[cor] = limite
+
         with open('../calibr.wr', 'wb') as output:
-            pickle.dump(result, output, pickle.HIGHEST_PROTOCOL)
+            pickle.dump(anterior, output, pickle.HIGHEST_PROTOCOL)
         # cleanup the camera and close any open windows
         camera.release()
         cv2.destroyAllWindows()
