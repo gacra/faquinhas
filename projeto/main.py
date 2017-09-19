@@ -7,7 +7,7 @@ import sys
 mundo = Mundo()
 
 erro = False
-if len(sys.argv) == 3:
+if len(sys.argv) >= 3:
     if sys.argv[1] == 'true':
         debub = True
     elif sys.argv[1] == 'false':
@@ -21,11 +21,15 @@ if len(sys.argv) == 3:
 if len(sys.argv) < 3 or erro == True:
     debub = False
     largPixels = 600
+if len(sys.argv) == 4:
+    corAmiga = sys.argv[3]
+else:
+    corAmiga = None
 
 visao = Visao("calibr.wr", 0, largPixels, debub, mundo)
 sonar = Sonar(2.0, mundo)
 
-ia = IA(mundo)
+ia = IA(corAmiga, mundo)
 
 '''
 while True:
@@ -47,3 +51,4 @@ try:
 except:
     visao.finaliza()
     ia.finalizar()
+

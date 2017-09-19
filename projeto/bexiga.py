@@ -34,6 +34,8 @@ Altera as informacoes da bexiga
 Usado para indicar que a bexiga nao eh mais visivel
         """
         self.visivel = False
+        self.area = -1
+        self.h = -1
         self.numVis = 0
 
     def getPos(self):

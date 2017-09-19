@@ -228,8 +228,11 @@ if __name__ == '__main__':
         print()
         print(result)
 
-        with open('../calibr.wr', 'rb') as input:
-            anterior = pickle.load(input)
+        try:
+            with open('../calibr.wr', 'rb') as input:
+                anterior = pickle.load(input)
+        except:
+            anterior = {}
 
         for cor, limite in result.items():
             anterior[cor] = limite
