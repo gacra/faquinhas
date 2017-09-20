@@ -8,7 +8,7 @@ class Mundo:
     def __init__(self):
         self.listaBexiga = {}
         self.distSonar = None
-        self.atualizado = False
+        self.temBexiga = False
         self.mutex = Lock()
 
     @property

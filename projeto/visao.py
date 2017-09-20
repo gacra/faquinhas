@@ -88,14 +88,13 @@ Atualiza as informacoes do Mundo a partir da imagem da camera
                     h = h/float(frameHeight)
 
                     self.mundo.setBexiga(color, x, y, h, area)
+                    self.mundo.temBexiga = True
                     detect = True
                 if self.debug:
                     cv2.drawContours(frame, c, -1, (255, 0, 0), 3)
 
             if detect == False:
                 self.mundo.bexigaInvisivel(color)
-
-        self.mundo.atualizado = True
 
         if self.debug:
             frame = cv2.flip(frame, 1)
