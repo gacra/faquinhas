@@ -15,7 +15,7 @@ Mover o robo com as velocidades passadas
         debug = "Movendo!!\n"
         debug += "Vel angular = " + str(velAng)
         debug += "Vel linear = " + str(velLin)
-        print(debug)
+        #print(debug)
 
         if velLin == 0:
             #Apenas rotacao (em relacao ao proprio eixo)
@@ -26,6 +26,10 @@ Mover o robo com as velocidades passadas
             sentido1 = -sentido0
             dutycicle0 = dutycicle1 = abs(velAng)
         else:
+            #if abs(velLin) < 20 and velAng<0:
+            #    velAng *= 2
+                
+            
             #Rotacao e translacao ou somente translacao
             x = (2 * (abs(velLin / 100.0))) / (1 + (1 - abs(velAng / 100.0)))
 
