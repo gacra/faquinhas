@@ -1,5 +1,6 @@
 from movimentacao import Movimentacao
 from threading import Thread
+import time
 from operator import attrgetter
 
 import time
@@ -15,6 +16,7 @@ class IA(Thread):
         self.movimentacao = Movimentacao()
         self.contador = 0
         self.estado = Estados.Inicial
+        self.pid = PID()
         Thread.__init__(self)
 
     def decisao(self):
@@ -75,7 +77,7 @@ class IA(Thread):
         '''
 
         #Teste de correr ate a bexiga -> em andamento
-    
+        '''
         if bexiga.visivel == True:
             (x, y) = bexiga.getPos()
             x = -x
@@ -95,6 +97,24 @@ class IA(Thread):
             print("X: " +str(x)+ " Y: " + str(y) + " Vel Ang: " + str(int(velAng)) + " Vel Lim: " + str(50))
         else:
             self.movimentacao.mover(0,0)
+        '''
+
+        #teste correr PID
+        if bexiga.visivel == True:
+            if self.estado == Estados.SemBexiga:
+                self.pid.reset()
+                self.estado = Estados.ComBexiga
+                print("Reset PID")
+            (x, y) = bexiga.getPos()
+            x = -x
+            velAng = int(self.pid.iterar(x))
+            print(velAng)
+            self.movimentacao.mover(velAng, 0)
+            print("Com bexiga")
+        else:
+            self.movimentacao.mover(0,0)
+            self.estado = Estados.SemBexiga
+            print("Sem bexiga")
 
         # Girar rapido e voltar quando ver a bexiga -> essa parte de girar deu certo
         '''
@@ -132,6 +152,35 @@ Metodo a rodar na Thread
 
     def finalizar(self):
         self.movimentacao.finalizar()
+
+class PID():
+    def __init__(self):
+        self.erroAnterior = None
+        self.tempoAnterior = None
+        self.kp = 2
+        self.kd = 0
+
+    def reset(self):
+        self.erroAnterior = None
+        self.tempoAnterior = None
+
+    def iterar(self, erro):
+        if self.erroAnterior is not None:
+            tempoAtual = time.clock()
+            dt = tempoAtual - self.tempoAnterior
+            self.tempoAnterior = tempoAtual
+            diff = (erro-self.erroAnterior)/dt
+        else:
+            diff = 0
+            self.tempoAnterior = time.clock()
+
+        termo_p = self.kp * erro
+        termo_d = self.kd * diff
+
+        self.erroAnterior = erro
+
+        return termo_p + termo_d
+
 
 class Estados:
     Inicial, SemBexiga, PassouBexiga, ComBexiga = range(4)

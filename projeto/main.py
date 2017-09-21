@@ -42,6 +42,7 @@ while True:
 #visao.start()
 #ia.start()
 
+
 try:
     while True:
         visao.update()
