@@ -25,6 +25,8 @@ Inicializa o objeto Visao
 
         with open('../calibr.wr', 'rb') as input:
             self.colorsLimits = pickle.load(input)
+        
+        print(self.colorsLimits)
 
         self.camera = cv2.VideoCapture(numCam)
         self.largPixels = largPixels

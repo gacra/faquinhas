@@ -51,4 +51,3 @@ try:
 except:
     visao.finaliza()
     ia.finalizar()
-

@@ -28,7 +28,6 @@ Mover o robo com as velocidades passadas
         else:
             #if abs(velLin) < 20 and velAng<0:
             #    velAng *= 2
-                
             
             #Rotacao e translacao ou somente translacao
             x = (2 * (abs(velLin / 100.0))) / (1 + (1 - abs(velAng / 100.0)))
@@ -70,5 +69,7 @@ if __name__ == '__main__':
         velLin = raw_input("VelLin: ")
 
         movimentacao.mover(int(velAng), int(velLin))
+        
+        print("--------------------")
 
     movimentacao.finalizar()

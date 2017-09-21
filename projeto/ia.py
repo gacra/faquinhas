@@ -21,21 +21,39 @@ class IA(Thread):
 
         self.listaBexiga = self.mundo.listaBexiga
 
-        bexiga = self.listaBexiga.get('orange')
+        bexiga = self.listaBexiga.get('green')
 
         '''
         maxB = max(self.listaBexiga.values(), key=attrgetter("area"))
 
         print(maxB)
         '''
-
+        
+        '''
         #Teste nova girada
         if bexiga.visivel == True:
             if self.estado == Estados.SemBexiga:
-                self.movimentacao.mover(-20, 20)
+                self.movimentacao.mover(10, 20)
                 self.estado = Estados.PassouBexiga
                 print("Passou bexiga")
-            if self.estado in [Estados.Inicial, Estados.PassouBexiga, Estados.ComBexiga]:
+                self.contador = 0
+            elif self.estado == Estados.PassouBexiga:
+                if self.contador < 1:
+                    self.contador += 1
+                    self.movimentacao.mover(10, 20)
+                    self.estado = Estados.PassouBexiga
+                    print("Passou bexiga")
+                else:
+                    (x, y) = bexiga.getPos()
+                    velAng = int(x * 100)
+                    velLim = int((1 - bexiga.altura) * 100)
+                    if velLim < 15 and velLim != 0:
+                        velLim = 15
+                        velAng = velAng * 1.5
+                    self.movimentacao.mover(-int(velAng / 4), int(velLim))
+                    self.estado = Estados.ComBexiga
+                    print("Correndo")
+            elif self.estado in [Estados.Inicial, Estados.ComBexiga]:
                 (x, y) = bexiga.getPos()
                 velAng = int(x * 100)
                 velLim = int((1 - bexiga.altura) * 100)
@@ -52,25 +70,31 @@ class IA(Thread):
                 self.estado = Estados.SemBexiga
                 print("Girando")
             elif self.estado == Estados.PassouBexiga:
-                self.movimentacao.mover(-20, 20)
+                self.movimentacao.mover(10, 30)
                 print("Passou bexiga")
+        '''
 
         #Teste de correr ate a bexiga -> em andamento
-        '''
+    
         if bexiga.visivel == True:
             (x, y) = bexiga.getPos()
+            x = -x
             velAng = int(x * 100)
             velLim = int((1 - bexiga.altura) * 100)
             if velLim < 15:
                 velLim = 15
                 velAng = velAng * 1.5
-            if velAng > 20:
-                velAng = 20
-            self.movimentacao.mover(-int(velAng), int(velLim))
-            print("X: " +str(x)+ " Y: " + str(y) + " Vel Ang: " + str(-int(velAng / 4)) + " Vel Lim: " + str(int(velLim)))
+            if velAng < 0:
+                if velAng < -28:
+                    velAng = -28
+                if velAng >-22:
+                    velAng = -22
+            elif velAng > 20:
+                    velAng =20
+            self.movimentacao.mover(int(velAng), 50)
+            print("X: " +str(x)+ " Y: " + str(y) + " Vel Ang: " + str(int(velAng)) + " Vel Lim: " + str(50))
         else:
             self.movimentacao.mover(0,0)
-        '''
 
         # Girar rapido e voltar quando ver a bexiga -> essa parte de girar deu certo
         '''
