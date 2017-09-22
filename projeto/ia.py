@@ -155,11 +155,13 @@ Metodo a rodar na Thread
 
 class PID():
     def __init__(self):
+        self.erroI = None
         self.erroAnterior = None
         self.tempoAnterior = None
-        self.kp = 2
-        self.kd = 0
-
+        self.kp = 20
+        self.kd = 3
+        self.ki = 1.75
+        
     def reset(self):
         self.erroAnterior = None
         self.tempoAnterior = None
@@ -170,16 +172,22 @@ class PID():
             dt = tempoAtual - self.tempoAnterior
             self.tempoAnterior = tempoAtual
             diff = (erro-self.erroAnterior)/dt
+            self.erroI += erro * dt
+            print("dt: " + str(dt)+ "Diff: " + str(diff) + "ErroI :" + str(self.erroI))
         else:
+            self.erroI = 0
             diff = 0
             self.tempoAnterior = time.clock()
 
         termo_p = self.kp * erro
         termo_d = self.kd * diff
+        termo_i = self.ki * self.erroI
+                  
+        print("P: " + str(termo_p) + "I: " + str(termo_i) + "D: " + str(termo_d))
 
         self.erroAnterior = erro
 
-        return termo_p + termo_d
+        return termo_p + termo_d + termo_i
 
 
 class Estados:
