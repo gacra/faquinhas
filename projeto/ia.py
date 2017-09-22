@@ -38,6 +38,9 @@ class IA():
         self.listaBexiga = self.mundo.listaBexiga
 
         bexiga = max(self.listaBexiga.values(), key=attrgetter("area"))
+        
+        if bexiga.nome != 'pink' and bexiga.nome != 'orange':
+            return
 
         #Se ve a bexiga
         if bexiga.visivel == True:
@@ -45,7 +48,8 @@ class IA():
             #Se esta vendo pela primeira vez
             if self.estado == Estados.SemBexiga:
                 self.pid.reset()
-                self.movimentacao.mover(-5,0)
+                self.movimentacao.mover(-1,0.15)
+                time.sleep(0.6)
                 self.estado = Estados.ComBexiga
                 print("Reset PID")
 
@@ -57,7 +61,7 @@ class IA():
 
         #Se nao ve a bexiga
         else:
-            self.movimentacao.mover(0,0)
+            self.movimentacao.mover(1.7,0)
             self.estado = Estados.SemBexiga
             print("Sem bexiga")
 
