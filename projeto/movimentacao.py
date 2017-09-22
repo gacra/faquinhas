@@ -23,7 +23,7 @@ Mover o robo com as velocidades passadas
         dutycicle0 = int(((-velLin - (R*velAng))/velMax)*100)
         dutycicle1 = int(((velLin - (R*velAng))/velMax)*100)
         
-        print("DC0: " + str(dutycicle0) + " DC1: " +str(dutycicle1))
+        #print("DC0: " + str(dutycicle0) + " DC1: " +str(dutycicle1))
             
         if dutycicle0 > 0:
               sentido0 = 1

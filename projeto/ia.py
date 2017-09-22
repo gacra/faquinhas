@@ -14,8 +14,10 @@ class IA():
         self.mundo = mundo
         self.movimentacao = Movimentacao()
         self.contador = 0
-        self.estado = Estados.Inicial
+        self.estado = Estados.SemBexiga
         self.pid = PID()
+        self.contComBexiga = 0
+        self.contGirar = 0
 
     def correrBexiga(self, bexiga):
         (x, y) = bexiga.getPos()
@@ -30,18 +32,57 @@ class IA():
         elif velLin < 0.20:
             velLin = 0.20
         self.movimentacao.mover(velAng, velLin)
-        print("VelLin: " + str(velLin) + " VelAng: " + str(velAng))
+        #print("VelLin: " + str(velLin) + " VelAng: " + str(velAng))
 
 
     def decisao(self):
 
         self.listaBexiga = self.mundo.listaBexiga
 
-        bexiga = max(self.listaBexiga.values(), key=attrgetter("area"))
-        
-        if bexiga.nome != 'pink' and bexiga.nome != 'orange':
-            return
+        bexiga = self.listaBexiga.get('orange')
 
+        #bexiga = max(self.listaBexiga.values(), key=attrgetter("area"))
+        
+        #if bexiga.nome != 'pink' and bexiga.nome != 'orange':
+        #    return
+
+        if self.estado == Estados.SemBexiga:
+            if bexiga.visivel == True:
+                self.pid.reset()
+                self.correrBexiga(bexiga)
+                self.contComBexiga = 1
+                self.estado = Estados.ComBexiga
+                print("Prim vez")
+            else:
+                self.movimentacao.mover(1.7, 0)
+                self.estado = Estados.SemBexiga
+                print("Sem bexiga")
+        elif self.estado == Estados.ComBexiga:
+            if bexiga.visivel == True:
+                self.correrBexiga(bexiga)
+                self.contComBexiga += 1
+                self.estado = Estados.ComBexiga
+                print("Com bexiga")
+            else:
+                if self.contComBexiga < 10:
+                    self.movimentacao.mover(-1,0.15)
+                    self.estado = Estados.Curva
+                    print("Curva")
+                else:
+                    self.movimentacao.mover(1.7, 0)
+                    self.estado = Estados.SemBexiga
+                    print("Sem bexiga")
+        elif self.estado == Estados.Curva:
+            if bexiga.visivel == True:
+                self.pid.reset()
+                self.correrBexiga(bexiga)
+                self.estado == Estados.ComBexiga
+                print("Com bexiga")
+            else:
+                self.movimentacao.mover(-1,0.15)
+                self.estado = Estados.Curva
+                print("Curva")
+        '''
         #Se ve a bexiga
         if bexiga.visivel == True:
 
@@ -64,7 +105,7 @@ class IA():
             self.movimentacao.mover(1.7,0)
             self.estado = Estados.SemBexiga
             print("Sem bexiga")
-
+        '''
     def finalizar(self):
         self.movimentacao.finalizar()
 
@@ -116,4 +157,4 @@ class PID():
 
 
 class Estados:
-    Inicial, SemBexiga, PassouBexiga, ComBexiga = range(4)
+    SemBexiga, Curva, ComBexiga = range(3)
