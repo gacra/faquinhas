@@ -18,6 +18,7 @@ class IA():
         self.pid = PID()
         self.contComBexiga = 0
         self.contGirar = 0
+        self.ultimoLado = 1
 
     def correrBexiga(self, bexiga):
         (x, y) = bexiga.getPos()
@@ -33,6 +34,20 @@ class IA():
             velLin = 0.20
         self.movimentacao.mover(velAng, velLin)
         #print("VelLin: " + str(velLin) + " VelAng: " + str(velAng))
+        
+    def girar(self):
+        if self.ultimoLado == 1:
+            velAng = 1.7
+        else:
+            velAng = -1.5
+        self.movimentacao.mover(velAng, 0)
+    
+    def curvar():
+        if self.ultimoLado == 1:
+            velAng = -1
+        else:
+            velAng = 1
+        self.movimentacao.mover(velAng, 0.15)
 
 
     def decisao(self):
@@ -54,34 +69,49 @@ class IA():
                 self.estado = Estados.ComBexiga
                 print("Prim vez")
             else:
-                self.movimentacao.mover(1.7, 0)
+                self.girar()
                 self.estado = Estados.SemBexiga
                 print("Sem bexiga")
         elif self.estado == Estados.ComBexiga:
             if bexiga.visivel == True:
                 self.correrBexiga(bexiga)
+                if self.contComBexiga >= 10:
+                    if bexiga.x > 0:
+                        self.ultimoLado = -1
+                    else:
+                        self.ultimoLado = 1
                 self.contComBexiga += 1
                 self.estado = Estados.ComBexiga
                 print("Com bexiga")
             else:
                 if self.contComBexiga < 10:
-                    self.movimentacao.mover(-1,0.15)
+                    self.contComBexiga = 10
+                    self.curvar()
+                    self.contGirar = 1
                     self.estado = Estados.Curva
                     print("Curva")
                 else:
-                    self.movimentacao.mover(1.7, 0)
+                    self.ultimoLado
+                    self.girar()
                     self.estado = Estados.SemBexiga
                     print("Sem bexiga")
         elif self.estado == Estados.Curva:
             if bexiga.visivel == True:
                 self.pid.reset()
                 self.correrBexiga(bexiga)
-                self.estado == Estados.ComBexiga
-                print("Com bexiga")
+                self.estado = Estados.ComBexiga
+                print("Com bexiga*")
             else:
-                self.movimentacao.mover(-1,0.15)
-                self.estado = Estados.Curva
-                print("Curva")
+                if self.contGirar < 15:
+                    self.curvar()
+                    self.contGirar += 1
+                    self.estado = Estados.Curva
+                    print("Curva")
+                if self.contGirar >= 15:
+                    self.girar()
+                    self.estado = Estados.SemBexiga
+                    print("Sem bexiga")
+
         '''
         #Se ve a bexiga
         if bexiga.visivel == True:
