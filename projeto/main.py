@@ -38,8 +38,6 @@ while True:
     # print(mundo)  # For Debug
     ia.decisao()
 '''
-#visao.start()
-#ia.start()
 
 try:
     while True:
