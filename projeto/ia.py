@@ -23,14 +23,13 @@ class IA(Thread):
 
         self.listaBexiga = self.mundo.listaBexiga
 
-        bexiga = self.listaBexiga.get('green')
+        bexiga = self.listaBexiga.get('orange')
 
         '''
         maxB = max(self.listaBexiga.values(), key=attrgetter("area"))
 
         print(maxB)
         '''
-        
         '''
         #Teste nova girada
         if bexiga.visivel == True:
@@ -75,7 +74,6 @@ class IA(Thread):
                 self.movimentacao.mover(10, 30)
                 print("Passou bexiga")
         '''
-
         #Teste de correr ate a bexiga -> em andamento
         '''
         if bexiga.visivel == True:
@@ -99,22 +97,35 @@ class IA(Thread):
             self.movimentacao.mover(0,0)
         '''
 
-        #teste correr PID
+        '''
+        #teste correr PID -> bom pra caraio
         if bexiga.visivel == True:
             if self.estado == Estados.SemBexiga:
                 self.pid.reset()
                 self.estado = Estados.ComBexiga
                 print("Reset PID")
+                self.movimentacao.mover(-5,0)
+                
+                return
             (x, y) = bexiga.getPos()
             x = -x
-            velAng = int(self.pid.iterar(x))
-            print(velAng)
-            self.movimentacao.mover(velAng, 0)
+            velAng = self.pid.iterar(x)
+            if velAng > 9.09:
+                velAng = 9.09
+            altura = bexiga.altura
+            velLin = 0.9 - altura
+            if velLin > 0.8:
+                velLin = 0.8
+            elif velLin < 0.20:
+                velLin = 0.20
+            self.movimentacao.mover(velAng, velLin)
+            print("VelLin: " + str(velLin) + " VelAng: " + str(velAng)) 
             print("Com bexiga")
         else:
             self.movimentacao.mover(0,0)
             self.estado = Estados.SemBexiga
             print("Sem bexiga")
+        '''
 
         # Girar rapido e voltar quando ver a bexiga -> essa parte de girar deu certo
         '''
@@ -158,13 +169,15 @@ class PID():
         self.erroI = None
         self.erroAnterior = None
         self.tempoAnterior = None
-        self.kp = 20
-        self.kd = 3
-        self.ki = 1.75
+        self.kp = 1.4
+        self.ki = 0.05
+        self.kd = 0.5
+
         
     def reset(self):
         self.erroAnterior = None
         self.tempoAnterior = None
+        self.erroI = None
 
     def iterar(self, erro):
         if self.erroAnterior is not None:
@@ -173,7 +186,7 @@ class PID():
             self.tempoAnterior = tempoAtual
             diff = (erro-self.erroAnterior)/dt
             self.erroI += erro * dt
-            print("dt: " + str(dt)+ "Diff: " + str(diff) + "ErroI :" + str(self.erroI))
+            #print("dt: " + str(dt)+ "Diff: " + str(diff) + "ErroI :" + str(self.erroI))
         else:
             self.erroI = 0
             diff = 0
@@ -182,8 +195,18 @@ class PID():
         termo_p = self.kp * erro
         termo_d = self.kd * diff
         termo_i = self.ki * self.erroI
-                  
-        print("P: " + str(termo_p) + "I: " + str(termo_i) + "D: " + str(termo_d))
+        '''
+        LIMITANDO TERMO DO ITNEGRADOR
+        '''
+        
+        if termo_i > 0.7:
+            termo_i = 0.7
+        if termo_i < -0.7:
+            termo_i = -0.7
+        
+        
+        print("Termo P :" + str(termo_p) + " Termo I: " + str(termo_i) + " Termo D: " +str(termo_d))
+        #print("P: " + str(termo_p) + "I: " + str(termo_i) + "D: " + str(termo_d))
 
         self.erroAnterior = erro
 
