@@ -26,17 +26,12 @@ Mover o robo com as velocidades passadas
             sentido1 = -sentido0
             dutycicle0 = dutycicle1 = abs(velAng)
         else:
-            #if abs(velLin) < 20 and velAng<0:
-            #    velAng *= 2
-            
-            #Rotacao e translacao ou somente translacao
-            x = (2 * (abs(velLin / 100.0))) / (1 + (1 - abs(velAng / 100.0)))
 
             if velLin > 0:
                 sentido0 = 1
             else:
                 sentido0 = -1
-            sentido1 = sentido0
+            sentido1 = -sentido0
 
             if x > 1.0:
                 x = 1
