@@ -39,10 +39,10 @@ class IA():
         if self.ultimoLado == 1:
             velAng = 1.7
         else:
-            velAng = -1.5
+            velAng = -1.6
         self.movimentacao.mover(velAng, 0)
     
-    def curvar():
+    def curvar(self):
         if self.ultimoLado == 1:
             velAng = -1
         else:
@@ -54,9 +54,9 @@ class IA():
 
         self.listaBexiga = self.mundo.listaBexiga
 
-        bexiga = self.listaBexiga.get('orange')
+        #bexiga = self.listaBexiga.get('orange')
 
-        #bexiga = max(self.listaBexiga.values(), key=attrgetter("area"))
+        bexiga = max(self.listaBexiga.values(), key=attrgetter("area"))
         
         #if bexiga.nome != 'pink' and bexiga.nome != 'orange':
         #    return
@@ -102,12 +102,12 @@ class IA():
                 self.estado = Estados.ComBexiga
                 print("Com bexiga*")
             else:
-                if self.contGirar < 15:
+                if self.contGirar < 20:
                     self.curvar()
                     self.contGirar += 1
                     self.estado = Estados.Curva
                     print("Curva")
-                if self.contGirar >= 15:
+                if self.contGirar >= 20:
                     self.girar()
                     self.estado = Estados.SemBexiga
                     print("Sem bexiga")
