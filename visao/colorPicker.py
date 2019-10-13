@@ -5,6 +5,7 @@ import sys
 from collections import deque
 import pickle
 
+
 def mouse_click_red(event, x, y, flags, param):
     global firstClick
     global colorsLimits
@@ -14,7 +15,8 @@ def mouse_click_red(event, x, y, flags, param):
         color = frame[y, x]
 
         undo.append([list(colorsLimits[0]), list(colorsLimits[1])])
-        if firstClick == True:
+
+        if firstClick is True:
             colorsLimits[0][0] = colorsLimits[0][1] = (0, int(color[1]), int(color[2]))
             colorsLimits[1][0] = colorsLimits[1][1] = (179, int(color[1]), int(color[2]))
             firstClick = False
@@ -42,12 +44,14 @@ def mouse_click_red(event, x, y, flags, param):
                 if color[2] > colorsLimits[1][1][2]:
                     colorsLimits[1][1] = (colorsLimits[1][1][0], colorsLimits[1][1][1], int(color[2]))
         print(colorsLimits)
+
     if event == cv2.EVENT_RBUTTONDOWN:
         if len(undo) > 0:
             colorsLimits = undo.pop()
             print("Undo: " + str(colorsLimits))
             if len(undo) == 0:
                 firstClick = True
+
 
 def mouse_click(event, x, y, flags, param):
     global firstClick
@@ -58,7 +62,8 @@ def mouse_click(event, x, y, flags, param):
         color = frame[y, x]
 
         undo.append(list(colorsLimits))
-        if firstClick == True:
+
+        if firstClick is True:
             colorMin = (int(color[0]), int(color[1]), int(color[2]))
             colorsLimits[0] = colorMin
             colorMax = colorMin
@@ -78,6 +83,7 @@ def mouse_click(event, x, y, flags, param):
             if color[2] > colorsLimits[1][2]:
                 colorsLimits[1] = (colorsLimits[1][0], colorsLimits[1][1], int(color[2]))
         print(colorsLimits)
+
     if event == cv2.EVENT_RBUTTONDOWN:
         if len(undo) > 0:
             colorsLimits = undo.pop()
@@ -111,7 +117,6 @@ def rgbColorPicker(colorLimitsIni, undoIni):
 
         rgb = frame.copy()
 
-        # Criacao e tratamendo da mascara
         mask = cv2.inRange(rgb, colorsLimits[0], colorsLimits[1])
         mask = cv2.erode(mask, None, iterations=2)
         mask = cv2.dilate(mask, None, iterations=2)
@@ -121,7 +126,6 @@ def rgbColorPicker(colorLimitsIni, undoIni):
 
         output = cv2.bitwise_and(frame, frame, mask=mask)
 
-        # cv2.imshow('image', cv2.cvtColor(hsv, cv2.COLOR_HSV2BGR))
         cv2.imshow('image', rgb)
 
         cv2.imshow('mask', output)
@@ -156,14 +160,13 @@ def hsvColorPicker(cor, colorLimitsIni, undoIni):
 
         (grabbed, frame_cam) = camera.read()
 
-        frame = imutils.resize(frame_cam, width=frameWidth)  # 600px -> menos px, mais rapido de processar
+        frame = imutils.resize(frame_cam, width=frameWidth)
 
         frame = cv2.cvtColor(frame, cv2.COLOR_BGR2HSV)
 
         hsv = frame.copy()
 
-        # Criacao e tratamendo da mascara
-        if(cor == 'red'):
+        if cor == 'red':
             mask1 = cv2.inRange(hsv, colorsLimits[0][0], colorsLimits[0][1])
             mask1 = cv2.erode(mask1, None, iterations=2)
             mask1 = cv2.dilate(mask1, None, iterations=2)
@@ -210,17 +213,17 @@ if __name__ == '__main__':
     try:
         if len(sys.argv) == 2:
             while True:
-                cor = raw_input('Nome da cor: ')
-                colorLimitsIni = result.get(cor)
-                undoIni = dicUndo.get(cor)
-                if cor == '':
+                color = raw_input('Color name: ')
+                colorLimitsIni = result.get(color)
+                undoIni = dicUndo.get(color)
+                if color == '':
                     break
                 if sys.argv[1] == 'rgb':
                     range = rgbColorPicker(colorLimitsIni, undoIni)
                 elif sys.argv[1] == 'hsv':
-                    range = hsvColorPicker(cor, colorLimitsIni, undoIni)
-                result[cor] = range
-                dicUndo[cor] = undo.__copy__()
+                    range = hsvColorPicker(color, colorLimitsIni, undoIni)
+                result[color] = range
+                dicUndo[color] = undo.__copy__()
         else:
             print("Uso python colorPicker.py [rgb|hsv]")
 
@@ -230,15 +233,15 @@ if __name__ == '__main__':
 
         try:
             with open('../calibr.wr', 'rb') as input:
-                anterior = pickle.load(input)
+                previous = pickle.load(input)
         except:
-            anterior = {}
+            previous = {}
 
-        for cor, limite in result.items():
-            anterior[cor] = limite
+        for color, limit in result.items():
+            previous[color] = limit
 
         with open('../calibr.wr', 'wb') as output:
-            pickle.dump(anterior, output, pickle.HIGHEST_PROTOCOL)
+            pickle.dump(previous, output, pickle.HIGHEST_PROTOCOL)
         # cleanup the camera and close any open windows
         camera.release()
         cv2.destroyAllWindows()
